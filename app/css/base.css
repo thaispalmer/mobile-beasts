@@ -1,0 +1,93 @@
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
+
+body {
+    overflow: hidden;
+}
+
+#player {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #00a;
+    border-radius: 50%;
+    /*transition: -webkit-transform 0.1s linear;*/
+}
+#player.jump, #player.jump:before, #player.jump:after {
+    background: #00d;
+}
+#player:before {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 20%;
+    background-color: #00a;
+    left: 30%;
+    top: 0;
+    -webkit-transform: rotate(-15deg);
+}
+#player:after {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 20%;
+    background-color: #00a;
+    left: 30%;
+    bottom: 0;
+    -webkit-transform: rotate(15deg);
+}
+#player.rightPunch:after, #player.leftPunch:before {
+    width: 80%;
+    left: 50%;
+    -webkit-transform: rotate(0deg);
+}
+
+
+#controls {
+    z-index: 1000;
+    position: absolute;
+    bottom: 5%;
+    left: 2.5%;
+    right: 2.5%;
+    height: 0;
+    padding: 14%;
+    /*background-color: rgba(0,0,0,0.1);*/
+}
+#btn_directional {
+    left: 0%;
+    top: 0;
+    position: absolute;
+    width: 30%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.1);
+    border: 5px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+}
+.btn_actions {
+    position: absolute;
+    width: 12%;
+    height: 40%;
+    background-color: rgba(0,0,0,0.1);
+    border: 5px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+}
+#btn_leftPunch {
+    top: 30%;
+    right: 22%;
+}
+#btn_rightPunch {
+    top: 0;
+    right: 11%;
+}
+#btn_jump {
+    bottom: 0;
+    right: 11%;
+}
+#btn_lift {
+    bottom: 30%;
+    right: 0;
+}
