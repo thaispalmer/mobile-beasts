@@ -25,6 +25,7 @@ var localPlayer = {
         y: 50,
         z: 0
     },
+    health: 100,
     rotation: 0,
     state: {
         jump: false,
@@ -213,6 +214,7 @@ function touchMove(e) {
 setInterval(renderGame,33);
 function renderGame() {
     var player = document.getElementById('player');
+    var playerHealth = document.getElementById('playerHealth');
 
     // check actions
     if (localPlayer.keys.up) localPlayer.position.y -= 5;
@@ -252,7 +254,15 @@ function renderGame() {
     if (localPlayer.keys.right && localPlayer.keys.up) localPlayer.rotation = -45;
     if (localPlayer.keys.left && localPlayer.keys.up) localPlayer.rotation = -135;
 
+    // rendering player
     player.style.top = localPlayer.position.y + 'px';
     player.style.left = localPlayer.position.x + 'px';
     player.style.webkitTransform = 'scale('+(1+localPlayer.position.z/25)+') rotate('+localPlayer.rotation+'deg)';
+
+    // rendering player health
+    if (localPlayer.health == 100) playerHealth.style.display = 'none';
+    else playerHealth.style.display = 'block';
+    playerHealth.style.top = (localPlayer.position.y - localPlayer.position.z*1.5) + 'px';
+    playerHealth.style.left = localPlayer.position.x + 'px';
+    playerHealth.getElementsByClassName('amount')[0].style.width = localPlayer.health+'%';
 }

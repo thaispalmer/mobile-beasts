@@ -73,6 +73,27 @@ body {
 }
 
 
+/* player health */
+.health {
+    position: absolute;
+    width: 75px;
+    height: 10px;
+    margin-top: -20px;
+    left: 0;
+    background-color: #f00;
+    border: 1px solid #000;
+    opacity: 0.5;
+}
+.health .amount {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0f0;
+}
+
+
 /* gamepad */
 #controls {
     z-index: 1000;
@@ -83,6 +104,7 @@ body {
     height: 0;
     padding: 14%;
 }
+#controls.hidden { display: none; }
 #btn_directional {
     left: 0;
     top: 0;
