@@ -1,3 +1,13 @@
+/* viewport settings */
+function resizeViewport() {
+    var ratio = (window.innerWidth/1280);
+    if ((window.innerWidth/window.innerHeight) > (1280/720)) ratio = (window.innerHeight/720);
+    document.getElementById('viewport').style.webkitTransform = 'translate(-50%,-50%) scale('+ratio+')';
+}
+window.addEventListener('resize',resizeViewport);
+resizeViewport();
+
+
 /* local player settings */
 var localPlayer = {
     keys: {
@@ -203,25 +213,23 @@ function touchMove(e) {
 setInterval(renderGame,33);
 function renderGame() {
     var player = document.getElementById('player');
-    
-    if (localPlayer.keys.up) localPlayer.position.y -= 4;
-    if (localPlayer.keys.down) localPlayer.position.y += 4;
-    if (localPlayer.keys.left) localPlayer.position.x -= 4;
-    if (localPlayer.keys.right) localPlayer.position.x += 4;
+
+    // check actions
+    if (localPlayer.keys.up) localPlayer.position.y -= 5;
+    if (localPlayer.keys.down) localPlayer.position.y += 5;
+    if (localPlayer.keys.left) localPlayer.position.x -= 5;
+    if (localPlayer.keys.right) localPlayer.position.x += 5;
     if (localPlayer.keys.jump && !localPlayer.state.jump) {
         localPlayer.state.jump = true;
         localPlayer.helpers.jumpDirection = 2;
         localPlayer.helpers.jumpStart = localPlayer.position.z;
     }
     if (localPlayer.keys.leftPunch) player.classList.add('leftPunch');
-    else player.classList.remove('leftPunch');
+    else if (player.classList.contains('leftPunch')) player.classList.remove('leftPunch');
     if (localPlayer.keys.rightPunch) player.classList.add('rightPunch');
-    else player.classList.remove('rightPunch');
-    /*if (localPlayer.keys.leftPunch && !localPlayer.state.leftPunch) {
-        localPlayer.state.leftPunch = true;
-        localPlayer.helpers.leftPunchCounter = 0;
-    }*/
+    else if (player.classList.contains('rightPunch')) player.classList.remove('rightPunch');
 
+    // preparing jump
     if (localPlayer.state.jump) {
         player.classList.add('jump');
         if ((localPlayer.position.z == localPlayer.helpers.jumpStart) && (localPlayer.helpers.jumpDirection == -2)) {
@@ -234,16 +242,7 @@ function renderGame() {
             localPlayer.position.z += localPlayer.helpers.jumpDirection;
         }
     }
-    /*if (localPlayer.state.leftPunch) {
-        console.log(localPlayer.helpers.leftPunchCounter);
-        player.classList.add('leftPunch');
-        if (localPlayer.helpers.leftPunchCounter < 5) localPlayer.helpers.leftPunchCounter += 1;
-        else {
-            localPlayer.state.leftPunch = false;
-            player.classList.remove('leftPunch');
-        }
-    }*/
-
+    // preparing rotation
     if (localPlayer.keys.up) localPlayer.rotation = -90;
     if (localPlayer.keys.down) localPlayer.rotation = 90;
     if (localPlayer.keys.left) localPlayer.rotation = 180;
@@ -255,5 +254,5 @@ function renderGame() {
 
     player.style.top = localPlayer.position.y + 'px';
     player.style.left = localPlayer.position.x + 'px';
-    player.style.webkitTransform = 'scale('+(1+localPlayer.position.z/20)+') rotate('+localPlayer.rotation+'deg)';
+    player.style.webkitTransform = 'scale('+(1+localPlayer.position.z/25)+') rotate('+localPlayer.rotation+'deg)';
 }
