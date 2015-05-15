@@ -1,11 +1,6 @@
-/* viewport settings */
-function resizeViewport() {
-    var ratio = (window.innerWidth/1280);
-    if ((window.innerWidth/window.innerHeight) > (1280/720)) ratio = (window.innerHeight/720);
-    document.getElementById('viewport').style.webkitTransform = 'translate(-50%,-50%) scale('+ratio+')';
-}
-window.addEventListener('resize',resizeViewport);
-resizeViewport();
+/* ************** */
+/* Game functions */
+/* ************** */
 
 
 /* local player settings */
@@ -333,6 +328,13 @@ function renderGame() {
         remotePlayer.style.top = remotePlayers[i].position.y + 'px';
         remotePlayer.style.left = remotePlayers[i].position.x + 'px';
         remotePlayer.style.webkitTransform = 'scale('+(1+remotePlayers[i].position.z/25)+') rotate('+remotePlayers[i].rotation+'deg)';
+
+        if (remotePlayers[i].state.leftPunch) remotePlayer.classList.add('leftPunch');
+        else if (remotePlayer.classList.contains('leftPunch')) remotePlayer.classList.remove('leftPunch');
+        if (remotePlayers[i].state.rightPunch) remotePlayer.classList.add('rightPunch');
+        else if (remotePlayer.classList.contains('rightPunch')) remotePlayer.classList.remove('rightPunch');
+        if (remotePlayers[i].state.jump) remotePlayer.classList.add('jump');
+        else if (remotePlayer.classList.contains('jump')) remotePlayer.classList.remove('jump');
 
         var remotePlayerHealth = document.getElementById(remotePlayers[i].healthElement);
         if (remotePlayers[i].health == 100) remotePlayerHealth.style.display = 'none';

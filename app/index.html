@@ -3,27 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-    <link rel="stylesheet" type="text/css" href="css/base.css">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
     <title>Mobile Beasts</title>
 </head>
 <body>
 
 <div id="viewport">
-    <div id="player" class="player"></div>
-    <div id="playerHealth" class="health"><div class="amount"></div></div>
-</div>
-
-<div id="controls">
-    <div id="btn_directional" ontouchstart="checkTouch(event,true)" ontouchend="checkTouch(event,false)" ontouchmove="touchMove(event)"></div>
-    <div id="btn_jump" class="btn_actions" ontouchstart="checkTouch(event,true)" ontouchend="checkTouch(event,false)"></div>
-    <div id="btn_leftPunch" class="btn_actions" ontouchstart="checkTouch(event,true)" ontouchend="checkTouch(event,false)"></div>
-    <div id="btn_rightPunch" class="btn_actions" ontouchstart="checkTouch(event,true)" ontouchend="checkTouch(event,false)"></div>
-    <div id="btn_lift" class="btn_actions" ontouchstart="checkTouch(event,true)" ontouchend="checkTouch(event,false)"></div>
+    <form id="connection" class="form" action="game.html">
+        <input type="text" name="ip" placeholder="IP"/>
+        <input type="text" name="port" placeholder="Port"/>
+        <input type="submit" value="Connect"/>
+    </form>
 </div>
 
 <!--<script type="text/javascript" src="cordova.js"></script>-->
 <!--<script type="text/javascript" src="js/socket.io-1.0.3.js"></script>-->
-<script type="text/javascript" src="js/base.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
 
 </body>
 </html>
