@@ -10,10 +10,17 @@
 <body>
 
 <div id="viewport">
+    <h1 id="title">Mobile Beasts!</h1>
     <form id="connection" class="form" action="game.html">
-        <input type="text" name="ip" placeholder="IP"/>
-        <input type="text" name="port" placeholder="Port"/>
-        <input type="submit" value="Connect"/>
+        <input type="text" class="text" name="ip" placeholder="IP"/>
+        <input type="text" class="text" name="port" placeholder="Port" value="3500"/>
+        <select class="select" name="color">
+            <option value="#00a">Blue</option>
+            <option value="#a00">Red</option>
+            <option value="#0a0">Green</option>
+            <option value="#aa0">Yellow</option>
+        </select>
+        <button class="btn">Connect</button>
     </form>
 </div>
 

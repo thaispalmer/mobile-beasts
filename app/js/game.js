@@ -75,6 +75,14 @@ var remotePlayers = [
 ];
 
 
+/* getting parameters */
+console.log('IP: '+getURLParameter('ip'));
+console.log('Port: '+getURLParameter('port'));
+console.log('Player color: '+getURLParameter('color'));
+
+localPlayer.color = getURLParameter('color');
+
+
 /* key press */
 function checkKey(e,state) {
     e = e || window.event;
