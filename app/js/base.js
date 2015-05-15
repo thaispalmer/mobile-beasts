@@ -10,6 +10,7 @@ resizeViewport();
 
 /* local player settings */
 var localPlayer = {
+    color: '#00a',
     keys: {
         up: false,
         down: false,
@@ -34,11 +35,49 @@ var localPlayer = {
     },
     helpers: {
         jumpStart: null,
-        jumpDirection: null,
-        leftPunchCounter: null,
-        rightPunchCounter: null
+        jumpDirection: null
     }
 };
+
+
+/* other players */
+var remotePlayers = [
+    {
+        playerElement: null,
+        healthElement: null,
+        color: '#a00',
+        position: {
+            x: 200,
+            y: 200,
+            z: 0
+        },
+        health: 100,
+        rotation: 180,
+        state: {
+            jump: false,
+            leftPunch: false,
+            rightPunch: false
+        }
+    },
+
+    {
+        playerElement: null,
+        healthElement: null,
+        color: '#0a0',
+        position: {
+            x: 400,
+            y: 100,
+            z: 0
+        },
+        health: 100,
+        rotation: 90,
+        state: {
+            jump: false,
+            leftPunch: false,
+            rightPunch: false
+        }
+    }
+];
 
 
 /* key press */
@@ -255,6 +294,7 @@ function renderGame() {
     if (localPlayer.keys.left && localPlayer.keys.up) localPlayer.rotation = -135;
 
     // rendering player
+    player.style.backgroundColor = localPlayer.color;
     player.style.top = localPlayer.position.y + 'px';
     player.style.left = localPlayer.position.x + 'px';
     player.style.webkitTransform = 'scale('+(1+localPlayer.position.z/25)+') rotate('+localPlayer.rotation+'deg)';
@@ -265,4 +305,40 @@ function renderGame() {
     playerHealth.style.top = (localPlayer.position.y - localPlayer.position.z*1.5) + 'px';
     playerHealth.style.left = localPlayer.position.x + 'px';
     playerHealth.getElementsByClassName('amount')[0].style.width = localPlayer.health+'%';
+
+    // rendering remote players
+    for (var i = 0;i < remotePlayers.length; i++) {
+        // creating remote player elements if they doesn't exists
+        if (!remotePlayers[i].playerElement) {
+            var viewport = document.getElementById('viewport');
+
+            var playerNode = document.createElement('DIV');
+            playerNode.id = 'remote'+Math.floor(Math.random()*10000);
+            playerNode.classList.add('player');
+            viewport.appendChild(playerNode);
+
+            var healthNode = document.createElement('DIV');
+            healthNode.id = playerNode.id+'_health';
+            healthNode.classList.add('health');
+            healthNode.innerHTML = '<div class="amount"></div>';
+            viewport.appendChild(healthNode);
+
+            remotePlayers[i].playerElement = playerNode.id;
+            remotePlayers[i].healthElement = healthNode.id;
+        }
+
+        // rendering remote player and health
+        var remotePlayer = document.getElementById(remotePlayers[i].playerElement);
+        remotePlayer.style.backgroundColor = remotePlayers[i].color;
+        remotePlayer.style.top = remotePlayers[i].position.y + 'px';
+        remotePlayer.style.left = remotePlayers[i].position.x + 'px';
+        remotePlayer.style.webkitTransform = 'scale('+(1+remotePlayers[i].position.z/25)+') rotate('+remotePlayers[i].rotation+'deg)';
+
+        var remotePlayerHealth = document.getElementById(remotePlayers[i].healthElement);
+        if (remotePlayers[i].health == 100) remotePlayerHealth.style.display = 'none';
+        else remotePlayerHealth.style.display = 'block';
+        remotePlayerHealth.style.top = (remotePlayers[i].position.y - remotePlayers[i].position.z*1.5) + 'px';
+        remotePlayerHealth.style.left = remotePlayers[i].position.x + 'px';
+        remotePlayerHealth.getElementsByClassName('amount')[0].style.width = remotePlayers[i].health+'%';
+    }
 }

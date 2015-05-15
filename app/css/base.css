@@ -10,18 +10,6 @@ body {
     background-color: #000;
 }
 
-/*#viewport {*/
-    /*position: absolute;*/
-    /*left: 50%;*/
-    /*top: 50%;*/
-    /*width: 100%;*/
-    /*height: 0;*/
-    /*padding-bottom: 56.25%;*/
-    /*background-color: #fff;*/
-    /*-webkit-transform: translate(-50%,-50%);*/
-    /*overflow: hidden;*/
-/*}*/
-
 #viewport {
     position: absolute;
     left: 50%;
@@ -34,39 +22,38 @@ body {
 }
 
 
-/* player */
-#player {
+/* players */
+.player {
     position: absolute;
     width: 75px;
     height: 75px;
-    background: #00a;
     border-radius: 50%;
     /*transition: -webkit-transform 0.1s linear;*/
 }
-#player.jump, #player.jump:before, #player.jump:after {
-    background: #00d;
+.player.jump {
+    background-image: url('../images/white-transparent.png');
 }
-#player:before {
+.player:before {
     content: '';
     position: absolute;
     width: 70%;
     height: 20%;
-    background-color: #00a;
+    background: inherit;
     left: 30%;
     top: 0;
     -webkit-transform: rotate(-15deg);
 }
-#player:after {
+.player:after {
     content: '';
     position: absolute;
     width: 70%;
     height: 20%;
-    background-color: #00a;
+    background: inherit;
     left: 30%;
     bottom: 0;
     -webkit-transform: rotate(15deg);
 }
-#player.rightPunch:after, #player.leftPunch:before {
+.player.rightPunch:after, .player.leftPunch:before {
     width: 80%;
     left: 50%;
     -webkit-transform: rotate(0deg);
