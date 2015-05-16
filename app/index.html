@@ -12,20 +12,27 @@
 <div id="viewport">
     <h1 id="title">Mobile Beasts!</h1>
     <form id="connection" class="form" action="game.html">
-        <input type="text" class="text" name="ip" placeholder="IP"/>
-        <input type="text" class="text" name="port" placeholder="Port" value="3500"/>
+        <input type="text" class="text" name="ip" placeholder="IP" value="127.0.0.1"/>
         <select class="select" name="color">
             <option value="#00a">Blue</option>
             <option value="#a00">Red</option>
             <option value="#0a0">Green</option>
             <option value="#aa0">Yellow</option>
         </select>
-        <button class="btn">Connect</button>
+        <input type="submit" class="btn" value="Connect"/>
+        <button class="btn" onclick="createServer(); return false;">Create Server</button>
     </form>
 </div>
 
-<!--<script type="text/javascript" src="cordova.js"></script>-->
-<!--<script type="text/javascript" src="js/socket.io-1.0.3.js"></script>-->
+<script>
+    function createServer() {
+        var form = document.getElementById('connection');
+        form.action = 'server.html';
+        console.log(form.action);
+        form.submit();
+    }
+</script>
+<script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 
 </body>

@@ -77,7 +77,6 @@ var remotePlayers = [
 
 /* getting parameters */
 console.log('IP: '+getURLParameter('ip'));
-console.log('Port: '+getURLParameter('port'));
 console.log('Player color: '+getURLParameter('color'));
 
 localPlayer.color = getURLParameter('color');

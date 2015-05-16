@@ -15,5 +15,21 @@ function resizeViewport() {
     if ((window.innerWidth/window.innerHeight) > (1280/720)) ratio = (window.innerHeight/720);
     document.getElementById('viewport').style.webkitTransform = 'translate(-50%,-50%) scale('+ratio+')';
 }
-window.addEventListener('resize',resizeViewport);
-resizeViewport();
+if (document.getElementById('viewport')) {
+    window.addEventListener('resize', resizeViewport);
+    resizeViewport();
+}
+
+
+/* arraybuffer converters */
+function strtoab(str) {
+    var buf = new ArrayBuffer(str.length);
+    var bufView = new Int8Array(buf);
+    for (var i=0, strLen=str.length; i<strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+function abtostr(buf) {
+    return String.fromCharCode.apply(null, new Int8Array(buf));
+}
