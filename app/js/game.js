@@ -37,9 +37,9 @@ var localPlayer = {
 
 /* other players */
 var remotePlayers = [
+/*
     {
-        playerElement: null,
-        healthElement: null,
+        id: null,
         color: '#a00',
         position: {
             x: 200,
@@ -54,32 +54,8 @@ var remotePlayers = [
             rightPunch: false
         }
     },
-
-    {
-        playerElement: null,
-        healthElement: null,
-        color: '#0a0',
-        position: {
-            x: 400,
-            y: 100,
-            z: 0
-        },
-        health: 100,
-        rotation: 90,
-        state: {
-            jump: false,
-            leftPunch: false,
-            rightPunch: false
-        }
-    }
+*/
 ];
-
-
-/* getting parameters */
-console.log('IP: '+getURLParameter('ip'));
-console.log('Player color: '+getURLParameter('color'));
-
-localPlayer.color = getURLParameter('color');
 
 
 /* key press */
@@ -257,43 +233,79 @@ function renderGame() {
     var player = document.getElementById('player');
     var playerHealth = document.getElementById('playerHealth');
 
-    // check actions
-    if (localPlayer.keys.up) localPlayer.position.y -= 5;
-    if (localPlayer.keys.down) localPlayer.position.y += 5;
-    if (localPlayer.keys.left) localPlayer.position.x -= 5;
-    if (localPlayer.keys.right) localPlayer.position.x += 5;
-    if (localPlayer.keys.jump && !localPlayer.state.jump) {
-        localPlayer.state.jump = true;
-        localPlayer.helpers.jumpDirection = 2;
-        localPlayer.helpers.jumpStart = localPlayer.position.z;
-    }
-    if (localPlayer.keys.leftPunch) player.classList.add('leftPunch');
-    else if (player.classList.contains('leftPunch')) player.classList.remove('leftPunch');
-    if (localPlayer.keys.rightPunch) player.classList.add('rightPunch');
-    else if (player.classList.contains('rightPunch')) player.classList.remove('rightPunch');
+    if (gameStarted) {
+        var changes = false;
+        // check actions
+        if (localPlayer.keys.up) {
+            localPlayer.position.y -= 5;
+            changes = true;
+        }
+        if (localPlayer.keys.down) {
+            localPlayer.position.y += 5;
+            changes = true;
+        }
+        if (localPlayer.keys.left) {
+            localPlayer.position.x -= 5;
+            changes = true;
+        }
+        if (localPlayer.keys.right) {
+            localPlayer.position.x += 5;
+            changes = true;
+        }
+        if (localPlayer.keys.jump && !localPlayer.state.jump) {
+            localPlayer.state.jump = true;
+            localPlayer.helpers.jumpDirection = 2;
+            localPlayer.helpers.jumpStart = localPlayer.position.z;
+            changes = true;
+        }
+        if (localPlayer.keys.leftPunch) {
+            localPlayer.state.leftPunch = true;
+            player.classList.add('leftPunch');
+            changes = true;
+        }
+        else if (player.classList.contains('leftPunch')) {
+            localPlayer.state.leftPunch = false;
+            player.classList.remove('leftPunch');
+            changes = true;
+        }
+        if (localPlayer.keys.rightPunch) {
+            localPlayer.state.rightPunch = true;
+            player.classList.add('rightPunch');
+            changes = true;
+        }
+        else if (player.classList.contains('rightPunch')) {
+            localPlayer.state.rightPunch = false;
+            player.classList.remove('rightPunch');
+            changes = true;
+        }
 
-    // preparing jump
-    if (localPlayer.state.jump) {
-        player.classList.add('jump');
-        if ((localPlayer.position.z == localPlayer.helpers.jumpStart) && (localPlayer.helpers.jumpDirection == -2)) {
-            localPlayer.state.jump = false;
-            player.classList.remove('jump');
+        // preparing jump
+        if (localPlayer.state.jump) {
+            player.classList.add('jump');
+            if ((localPlayer.position.z == localPlayer.helpers.jumpStart) && (localPlayer.helpers.jumpDirection == -2)) {
+                localPlayer.state.jump = false;
+                player.classList.remove('jump');
+            }
+            else if (localPlayer.position.z < localPlayer.helpers.jumpStart+20) localPlayer.position.z += localPlayer.helpers.jumpDirection;
+            else if (localPlayer.position.z == localPlayer.helpers.jumpStart+20) {
+                localPlayer.helpers.jumpDirection = -2;
+                localPlayer.position.z += localPlayer.helpers.jumpDirection;
+            }
+            changes = true;
         }
-        else if (localPlayer.position.z < localPlayer.helpers.jumpStart+20) localPlayer.position.z += localPlayer.helpers.jumpDirection;
-        else if (localPlayer.position.z == localPlayer.helpers.jumpStart+20) {
-            localPlayer.helpers.jumpDirection = -2;
-            localPlayer.position.z += localPlayer.helpers.jumpDirection;
-        }
+        // preparing rotation
+        if (localPlayer.keys.up) localPlayer.rotation = -90;
+        if (localPlayer.keys.down) localPlayer.rotation = 90;
+        if (localPlayer.keys.left) localPlayer.rotation = 180;
+        if (localPlayer.keys.right) localPlayer.rotation = 0;
+        if (localPlayer.keys.right && localPlayer.keys.down) localPlayer.rotation = 45;
+        if (localPlayer.keys.left && localPlayer.keys.down) localPlayer.rotation = 135;
+        if (localPlayer.keys.right && localPlayer.keys.up) localPlayer.rotation = -45;
+        if (localPlayer.keys.left && localPlayer.keys.up) localPlayer.rotation = -135;
+
+        // updating player state with the server
+        if (changes) sendUpdate();
     }
-    // preparing rotation
-    if (localPlayer.keys.up) localPlayer.rotation = -90;
-    if (localPlayer.keys.down) localPlayer.rotation = 90;
-    if (localPlayer.keys.left) localPlayer.rotation = 180;
-    if (localPlayer.keys.right) localPlayer.rotation = 0;
-    if (localPlayer.keys.right && localPlayer.keys.down) localPlayer.rotation = 45;
-    if (localPlayer.keys.left && localPlayer.keys.down) localPlayer.rotation = 135;
-    if (localPlayer.keys.right && localPlayer.keys.up) localPlayer.rotation = -45;
-    if (localPlayer.keys.left && localPlayer.keys.up) localPlayer.rotation = -135;
 
     // rendering player
     player.style.backgroundColor = localPlayer.color;
@@ -310,12 +322,13 @@ function renderGame() {
 
     // rendering remote players
     for (var i = 0;i < remotePlayers.length; i++) {
+        var remotePlayer,remotePlayerHealth;
         // creating remote player elements if they doesn't exists
-        if (!remotePlayers[i].playerElement) {
+        if (!(remotePlayer = document.getElementById('player_'+remotePlayers[i].id))) {
             var viewport = document.getElementById('viewport');
 
             var playerNode = document.createElement('DIV');
-            playerNode.id = 'remote'+Math.floor(Math.random()*10000);
+            playerNode.id = 'player_'+remotePlayers[i].id;
             playerNode.classList.add('player');
             viewport.appendChild(playerNode);
 
@@ -324,13 +337,9 @@ function renderGame() {
             healthNode.classList.add('health');
             healthNode.innerHTML = '<div class="amount"></div>';
             viewport.appendChild(healthNode);
-
-            remotePlayers[i].playerElement = playerNode.id;
-            remotePlayers[i].healthElement = healthNode.id;
         }
 
         // rendering remote player and health
-        var remotePlayer = document.getElementById(remotePlayers[i].playerElement);
         remotePlayer.style.backgroundColor = remotePlayers[i].color;
         remotePlayer.style.top = remotePlayers[i].position.y + 'px';
         remotePlayer.style.left = remotePlayers[i].position.x + 'px';
@@ -343,11 +352,109 @@ function renderGame() {
         if (remotePlayers[i].state.jump) remotePlayer.classList.add('jump');
         else if (remotePlayer.classList.contains('jump')) remotePlayer.classList.remove('jump');
 
-        var remotePlayerHealth = document.getElementById(remotePlayers[i].healthElement);
+        remotePlayerHealth = document.getElementById('player_'+remotePlayers[i].id+'_health');
         if (remotePlayers[i].health == 100) remotePlayerHealth.style.display = 'none';
         else remotePlayerHealth.style.display = 'block';
         remotePlayerHealth.style.top = (remotePlayers[i].position.y - remotePlayers[i].position.z*1.5) + 'px';
         remotePlayerHealth.style.left = remotePlayers[i].position.x + 'px';
         remotePlayerHealth.getElementsByClassName('amount')[0].style.width = remotePlayers[i].health+'%';
     }
+}
+
+
+/* getting parameters */
+console.log('IP: '+getURLParameter('ip'));
+console.log('Player color: '+getURLParameter('color'));
+
+var server = getURLParameter('server');
+var addr = getURLParameter('ip');
+localPlayer.color = getURLParameter('color');
+
+var socket = {
+    id: null,
+    buffer: '',
+    command: null
+};
+
+var gameStarted = false;
+
+
+/* client connection */
+document.addEventListener('deviceready', function() {
+    console.log('Connecting to '+addr+':3500');
+    document.getElementById('connecting').innerHTML = 'Connecting to '+addr+':3500';
+    chrome.socket.create('tcp', {}, function(socketClient) {
+
+        // connecting
+        chrome.socket.connect(socketClient.socketId, addr, 3500, function(result) {
+            if (result == 0) {
+                console.log('Connected!');
+                document.getElementById('connecting').innerHTML = 'Connected!';
+                socket.id = socketClient.socketId;
+                sendData(socketClient.socketId,'JOIN '+localPlayer.color+(server ? ' AND START' : ''));
+                // prepare to receive data from server
+                receiveData(socketClient.socketId);
+            }
+            else {
+                console.log('Socket error: '+result);
+            }
+        });
+    });
+});
+
+function receiveData(socketId) {
+    chrome.socket.read(socketId, function(readResult) {
+        socket.buffer += abtostr(readResult.data);
+
+        // try to process the current buffer
+        processData(socketId);
+
+        // prepare to receive another incoming data
+        receiveData(socketId);
+    });
+}
+
+function processData(socketId) {
+    var endOfString = socket.buffer.indexOf("\r\n");
+    if (endOfString > -1) {
+        socket.command = socket.buffer.substring(0,endOfString);
+        socket.buffer = '';
+        console.log('Received: '+socket.command);
+
+        var params = socket.command.split(' ');
+        if (socket.command == 'OK WAIT GAME START') {
+            document.getElementById('connecting').style.display = 'none';
+            document.getElementById('waiting').style.display = 'block';
+        }
+        else if (socket.command == 'GAME ALREADY STARTED') {
+            document.getElementById('connecting').innerHTML = 'Connected! But the game has already begun.';
+            setTimeout(function() {
+                window.location.href = 'index.html';
+            },3000);
+        }
+        else if (socket.command == 'GAME START') {
+            document.getElementById('waiting').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
+            gameStarted = true;
+        }
+        else if (params[0] == 'RP') {
+            remotePlayers = JSON.parse(socket.command.substr(3));
+        }
+    }
+}
+
+function sendData(socketId,data) {
+    chrome.socket.write(socketId,strtoab(data+"\r\n"));
+}
+
+function sendUpdate() {
+    sendData(socket.id,'UPDATE '+JSON.stringify(
+        {
+            color: localPlayer.color,
+            position: localPlayer.position,
+            health: localPlayer.health,
+            rotation: localPlayer.rotation,
+            state: localPlayer.state
+        }
+    ));
 }
