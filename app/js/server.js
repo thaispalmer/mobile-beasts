@@ -160,5 +160,7 @@ function disconnectClient(socketId) {
 }
 
 function startGame() {
-    document.getElementById('game').src = 'game.html?ip=127.0.0.1&color='+encodeURIComponent(playerColor)+'&server=1';
+    var iframe = document.getElementById('game');
+    iframe.style.display = 'block';
+    iframe.src = 'game.html?ip=127.0.0.1&color='+encodeURIComponent(playerColor)+'&server=1';
 }
