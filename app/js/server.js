@@ -87,13 +87,13 @@ function processData(socketId) {
     if (endOfString > -1) {
         client.command = client.buffer.substring(0,endOfString);
         client.buffer = '';
-        serverLog('Received ['+socketId+']: '+client.command);
 
         var params = client.command.split(' ');
         if (params[0] == 'JOIN') {
             if (gameSettings.started && (params[2]+' '+params[3] != 'AND START')) {
                 sendData(socketId,"GAME ALREADY STARTED");
                 disconnectClient(socketId);
+                serverLog('Player['+socketId+'] tried to join, but the game has already started.');
             }
             else {
                 client.player = {
@@ -113,17 +113,25 @@ function processData(socketId) {
                     }
                 };
                 sendData(socketId,"OK WAIT GAME START");
+                sendData(socketId,"PLAYERID "+socketId);
                 updateAllPlayers();
+                serverLog('Player['+socketId+'] has joined the game.');
                 if (params[2]+' '+params[3] == 'AND START') {
                     broadcastData('GAME START');
+                    serverLog('The game has started!');
                 }
             }
+        }
+        else if (params[0] == 'START') {
+            broadcastData('GAME START');
+            serverLog('The game has started!');
         }
         else if (params[0] == 'UPDATE') {
             // update the current player
             client.player = JSON.parse(client.command.substr(7));
             updateAllPlayers();
         }
+        else serverLog('Received ['+socketId+']: '+client.command);
     }
 }
 

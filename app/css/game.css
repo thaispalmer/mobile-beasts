@@ -34,6 +34,7 @@
 
 
 /* players */
+#player,#playerHealth { opacity: 0.2 }
 .player {
     position: absolute;
     width: 75px;

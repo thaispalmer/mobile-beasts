@@ -5,6 +5,7 @@
 
 /* local player settings */
 var localPlayer = {
+    id: null,
     color: '#00a',
     keys: {
         up: false,
@@ -31,6 +32,10 @@ var localPlayer = {
     helpers: {
         jumpStart: null,
         jumpDirection: null
+    },
+    cache: {
+        remotePlayersCount: null,
+        index: null
     }
 };
 
@@ -419,27 +424,47 @@ function processData(socketId) {
     if (endOfString > -1) {
         socket.command = socket.buffer.substring(0,endOfString);
         socket.buffer = '';
-        console.log('Received: '+socket.command);
 
         var params = socket.command.split(' ');
         if (socket.command == 'OK WAIT GAME START') {
             document.getElementById('connecting').style.display = 'none';
             document.getElementById('waiting').style.display = 'block';
+            console.log('Joined successfully. Waiting the game to start');
         }
         else if (socket.command == 'GAME ALREADY STARTED') {
             document.getElementById('connecting').innerHTML = 'Connected! But the game has already begun.';
             setTimeout(function() {
                 window.location.href = 'index.html';
             },3000);
+            console.log('Tried to join, but the game has begun.');
+        }
+        else if (params[0] == 'PLAYERID') {
+            localPlayer.id = params[1];
+            console.log('Received id: '+localPlayer.id);
         }
         else if (socket.command == 'GAME START') {
             document.getElementById('waiting').style.display = 'none';
             document.getElementById('controls').style.display = 'block';
             gameStarted = true;
+            console.log('The game has started!');
         }
         else if (params[0] == 'RP') {
             remotePlayers = JSON.parse(socket.command.substr(3));
+            if (remotePlayers.length != localPlayer.cache.remotePlayersCount) {
+                localPlayer.cache.remotePlayersCount = remotePlayers.length;
+                var index;
+                for (index = 0; index < localPlayer.cache.remotePlayersCount; index++) {
+                    if (remotePlayers[index].id == localPlayer.id) break;
+                }
+                localPlayer.cache.index = index;
+            }
+            localPlayer.color = remotePlayers[localPlayer.cache.index].color;
+            localPlayer.position = remotePlayers[localPlayer.cache.index].position;
+            localPlayer.health = remotePlayers[localPlayer.cache.index].health;
+            localPlayer.rotation = remotePlayers[localPlayer.cache.index].rotation;
+            localPlayer.state = remotePlayers[localPlayer.cache.index].state;
         }
+        else console.log('Received: '+socket.command);
     }
 }
 
